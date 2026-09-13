@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8002/api";
+const API_URL = "https://django-todo-app-4o0b.onrender.com/api";
 
 
 // ===============================
