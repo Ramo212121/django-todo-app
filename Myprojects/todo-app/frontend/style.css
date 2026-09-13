@@ -1,0 +1,901 @@
+/* ==========================================
+   RESET & BASE (Apple Reminders + Video BG)
+   ========================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --accent: #007aff;
+    --accent-hover: #0066d6;
+    --text: #000000;
+    --text-muted: #8e8e93;
+    --border: #e5e5ea;
+    --red: #ff3b30;
+    --red-hover: #d70015;
+    --green: #34c759;
+    --orange: #ff9500;
+    --radius: 12px;
+    --radius-sm: 10px;
+}
+
+/* ==========================================
+   DARK THEME
+   ========================================== */
+body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --red: #ef4444;
+    --red-hover: #dc2626;
+    --green: #10b981;
+    --orange: #f59e0b;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================
+   BACKGROUND VIDEO
+   ========================================== */
+.bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+#bg-video-dark {
+    display: none;
+}
+
+.video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ==========================================
+   CONTAINER
+   ========================================== */
+.container {
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15),
+                0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 28px;
+    color: var(--text);
+    letter-spacing: -0.03em;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text);
+    letter-spacing: -0.02em;
+}
+
+/* ==========================================
+   INPUTS
+   ========================================== */
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 13px 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: #f9f9fb;
+    transition: all 0.15s ease;
+    outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    background: var(--card);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
+button {
+    padding: 13px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    background: var(--accent);
+    color: white;
+    transition: all 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#login-button,
+#register-button {
+    width: 100%;
+}
+
+/* ==========================================
+   MESSAGES
+   ========================================== */
+#login-message,
+#register-message,
+#task-message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--red);
+    min-height: 20px;
+}
+
+/* ==========================================
+   TODO INPUT
+   ========================================== */
+.todo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.todo-input input,
+.todo-input textarea,
+.todo-input select,
+.todo-input button {
+    margin-bottom: 0;
+}
+
+/* ==========================================
+   SEARCH + FILTER
+   ========================================== */
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filters input,
+.filters select,
+.filters button {
+    height: 44px;
+    box-sizing: border-box;
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    margin-bottom: 0;
+}
+
+.filters input,
+.filters select {
+    border: 1px solid var(--border);
+    background: #f9f9fb;
+    color: var(--text);
+    flex: 1;
+    min-width: 120px;
+    font-family: inherit;
+}
+
+.filters input {
+    flex: 2;
+    min-width: 180px;
+}
+
+.filters select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 35px;
+}
+
+.filters button {
+    padding: 0 20px;
+    background: #e5e5ea;
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.filters button:hover:not(:disabled) {
+    background: #d1d1d6;
+}
+
+/* ==========================================
+   TASK CARD
+   ========================================== */
+.task {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.task:hover {
+    border-color: #d1d1d6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.task-info {
+    margin-bottom: 14px;
+}
+
+.task-info h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+    word-break: break-word;
+    letter-spacing: -0.01em;
+}
+
+.task-info p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.task-info p:last-child {
+    margin-bottom: 0;
+}
+
+.priority.low {
+    color: var(--green);
+    font-weight: 600;
+}
+
+.priority.medium {
+    color: var(--orange);
+    font-weight: 600;
+}
+
+.priority.high {
+    color: var(--red);
+    font-weight: 600;
+}
+
+/* ==========================================
+   TASK ACTIONS
+   ========================================== */
+.task-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.task-actions button {
+    flex: 1;
+    min-width: 80px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.edit-button {
+    background: #f2f2f7;
+    color: var(--text);
+}
+
+.edit-button:hover:not(:disabled) {
+    background: #e5e5ea;
+}
+
+.complete-button {
+    background: rgba(52, 199, 89, 0.12);
+    color: var(--green);
+}
+
+.complete-button:hover:not(:disabled) {
+    background: rgba(52, 199, 89, 0.2);
+}
+
+.delete-button {
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--red);
+}
+
+.delete-button:hover:not(:disabled) {
+    background: rgba(255, 59, 48, 0.2);
+}
+
+/* ==========================================
+   LOGOUT BUTTON
+   ========================================== */
+#logout-button {
+    margin-top: 20px;
+    width: 100%;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+#logout-button:hover:not(:disabled) {
+    background: #f2f2f7;
+    color: var(--text);
+}
+
+/* ==========================================
+   LOADING STATE
+   ========================================== */
+.loading-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+/* ==========================================
+   EMPTY STATE
+   ========================================== */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+    background: #f9f9fb;
+    border-radius: var(--radius);
+    border: 2px dashed var(--border);
+    margin-top: 18px;
+}
+
+.empty-state p {
+    margin: 8px 0;
+    font-size: 15px;
+}
+
+.empty-state p:first-child {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+/* ==========================================
+   ERROR STATE
+   ========================================== */
+.error-state {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--red);
+    background: rgba(255, 59, 48, 0.08);
+    border-radius: var(--radius);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    margin-top: 18px;
+}
+
+.error-state p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+/* ==========================================
+   MODAL
+   ========================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-box {
+    background: var(--card);
+    padding: 28px;
+    border-radius: 16px;
+    max-width: 380px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-box h3 {
+    margin-bottom: 12px;
+    color: var(--text);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.modal-box p {
+    margin-bottom: 22px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 11px 22px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.modal-btn-cancel {
+    background: #f2f2f7;
+    color: var(--accent);
+}
+
+.modal-btn-cancel:hover:not(:disabled) {
+    background: #e5e5ea;
+}
+
+.modal-btn-confirm {
+    background: var(--red);
+    color: white;
+}
+
+.modal-btn-confirm:hover:not(:disabled) {
+    background: var(--red-hover);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 768px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 24px;
+        border-radius: 14px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .filters {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filters input,
+    .filters select,
+    .filters button {
+        width: 100%;
+        flex: none;
+    }
+}
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 0;
+    }
+
+    .container {
+        margin: 0;
+        padding: 20px;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .task-actions {
+        flex-direction: column;
+    }
+
+    .task-actions button {
+        width: 100%;
+    }
+
+    .modal-box {
+        padding: 22px;
+        width: 95%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   TOAST NOTIFICATIONS
+   ========================================== */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    background: white;
+    color: #1e293b;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 250px;
+    max-width: 400px;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(100%);
+    animation: toastSlideIn 0.3s ease forwards;
+}
+
+.toast.toast-hiding {
+    animation: toastSlideOut 0.3s ease forwards;
+}
+
+.toast-success {
+    border-left: 4px solid #34c759;
+}
+
+.toast-error {
+    border-left: 4px solid #ff3b30;
+}
+
+.toast-info {
+    border-left: 4px solid #007aff;
+}
+
+.toast-warning {
+    border-left: 4px solid #ff9500;
+}
+
+.toast-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.toast-message {
+    flex: 1;
+    word-break: break-word;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@media (max-width: 480px) {
+    #toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .toast {
+        min-width: auto;
+        max-width: 100%;
+    }
+}
+
+
+/* ==========================================
+   EDIT MODAL
+   ========================================== */
+#edit-modal .modal-box {
+    max-width: 500px;
+}
+
+#edit-modal label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+    margin-top: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+#edit-modal input,
+#edit-modal textarea,
+#edit-modal select {
+    margin-bottom: 0;
+    /* background kaldırıldı — genel input kuralı devreye girsin */
+}
+
+#edit-modal textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+#edit-modal .modal-actions {
+    margin-top: 24px;
+}
+
+/* ==========================================
+   THEME TOGGLE BUTTON
+   ========================================== */
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    z-index: 10;
+}
+
+.theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+body.dark .theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* ==========================================
+   DARK THEME OVERRIDES
+   ========================================== */
+body.dark .container {
+    background: rgba(30, 41, 59, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+body.dark input::placeholder,
+body.dark textarea::placeholder {
+    color: var(--text-muted);
+}
+
+body.dark .task {
+    background: var(--card);
+    border-color: var(--border);
+}
+
+body.dark .task:hover {
+    border-color: #475569;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .edit-button {
+    background: #334155;
+    color: var(--text);
+}
+
+body.dark .edit-button:hover:not(:disabled) {
+    background: #475569;
+}
+
+body.dark .filters button {
+    background: #334155;
+    color: var(--text);
+}
+
+body.dark .filters button:hover:not(:disabled) {
+    background: #475569;
+}
+
+body.dark #logout-button {
+    border-color: var(--border);
+}
+
+body.dark #logout-button:hover:not(:disabled) {
+    background: #334155;
+}
+
+body.dark .modal-btn-cancel {
+    background: #334155;
+    color: var(--accent);
+}
+
+body.dark .modal-btn-cancel:hover:not(:disabled) {
+    background: #475569;
+}
+
+body.dark .toast {
+    background: #1e293b;
+    color: var(--text);
+}
+
+body.dark .empty-state {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+body.dark .theme-toggle {
+    color: var(--text);
+}
+
+/* ==========================================
+   DARK MODE — BACKGROUND VIDEO SWAP
+   ========================================== */
+body.dark #bg-video-light {
+    display: none;
+}
+
+body.dark #bg-video-dark {
+    display: block;
+}
+
+/* ==========================================
+   DARK MODE — EDIT MODAL
+   ========================================== */
+body.dark #edit-modal .modal-box {
+    background: var(--card);
+}
+
+body.dark #edit-modal input,
+body.dark #edit-modal textarea,
+body.dark #edit-modal select {
+    background: rgba(15, 23, 42, 0.6);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+body.dark #edit-modal input:focus,
+body.dark #edit-modal textarea:focus,
+body.dark #edit-modal select:focus {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+body.dark #edit-modal input::placeholder,
+body.dark #edit-modal textarea::placeholder {
+    color: var(--text-muted);
+}
+
+body.dark #edit-modal label {
+    color: var(--text-muted);
+}
