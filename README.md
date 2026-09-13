@@ -69,19 +69,6 @@ A full-stack todo application built with **Django REST Framework** and **Vanilla
 
 ---
 
-## 📸 Screenshots
-
-### 🔐 Login Screen
-![Login](screenshots/login.png)
-
-### 📝 Task List
-![Tasks](screenshots/tasks.png)
-
-### ✏️ Edit Modal
-![Edit Modal](screenshots/edit-modal.png)
-
-### 🌙 Dark Mode
-![Dark Mode](screenshots/dark-mode.png)
 
 ---
 
@@ -94,5 +81,5 @@ A full-stack todo application built with **Django REST Framework** and **Vanilla
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/django-todo-app.git
+git clone https://github.com/Ramo212121/django-todo-app.git
 cd django-todo-app
