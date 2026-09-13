@@ -9,10 +9,10 @@ from .models import Task
 # BASE TEST CLASS
 # ==========================================
 class BaseAPITestCase(TestCase):
-    """Ortak setup: iki kullanıcı + token'ları oluşturur."""
+    """Shared setup: creates two users + their tokens."""
 
     def setUp(self):
-        # İki kullanıcı oluştur
+        # Create two users
         self.user1 = User.objects.create_user(
             username="alice",
             email="alice@test.com",
@@ -24,7 +24,7 @@ class BaseAPITestCase(TestCase):
             password="password123"
         )
 
-        # Token'ları oluştur
+        # Create tokens
         self.token1 = Token.objects.create(user=self.user1)
         self.token2 = Token.objects.create(user=self.user2)
 
@@ -41,7 +41,7 @@ class RegisterTests(TestCase):
         self.client = APIClient()
 
     def test_register_success(self):
-        """Başarılı kayıt → 201."""
+        """Successful registration → 201."""
         response = self.client.post("/api/register/", {
             "username": "newuser",
             "email": "new@test.com",
@@ -52,7 +52,7 @@ class RegisterTests(TestCase):
         self.assertTrue(User.objects.filter(username="newuser").exists())
 
     def test_register_weak_password(self):
-        """Zayıf şifre → 400."""
+        """Weak password → 400."""
         response = self.client.post("/api/register/", {
             "username": "newuser",
             "password": "123"
@@ -61,7 +61,7 @@ class RegisterTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_register_short_username(self):
-        """Kısa username → 400."""
+        """Short username → 400."""
         response = self.client.post("/api/register/", {
             "username": "ab",
             "password": "strongpass123"
@@ -70,7 +70,7 @@ class RegisterTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_register_duplicate_username(self):
-        """Aynı username → 400."""
+        """Duplicate username → 400."""
         User.objects.create_user(
             username="existing",
             password="password123"
@@ -84,7 +84,7 @@ class RegisterTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_register_missing_password(self):
-        """Şifresiz kayıt → 400."""
+        """Missing password → 400."""
         response = self.client.post("/api/register/", {
             "username": "newuser"
         }, format="json")
@@ -98,7 +98,7 @@ class RegisterTests(TestCase):
 class LoginTests(BaseAPITestCase):
 
     def test_login_success(self):
-        """Doğru şifre → 200 + token."""
+        """Correct password → 200 + token."""
         response = self.client.post("/api/login/", {
             "username": "alice",
             "password": "password123"
@@ -108,7 +108,7 @@ class LoginTests(BaseAPITestCase):
         self.assertIn("token", response.data)
 
     def test_login_wrong_password(self):
-        """Yanlış şifre → 401."""
+        """Wrong password → 401."""
         response = self.client.post("/api/login/", {
             "username": "alice",
             "password": "wrongpass"
@@ -117,7 +117,7 @@ class LoginTests(BaseAPITestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_login_nonexistent_user(self):
-        """Olmayan kullanıcı → 401."""
+        """Nonexistent user → 401."""
         response = self.client.post("/api/login/", {
             "username": "ghost",
             "password": "password123"
@@ -132,12 +132,12 @@ class LoginTests(BaseAPITestCase):
 class TaskListTests(BaseAPITestCase):
 
     def test_list_tasks_requires_auth(self):
-        """Token yoksa → 401."""
+        """No token → 401."""
         response = self.client.get("/api/tasks/")
         self.assertEqual(response.status_code, 401)
 
     def test_list_tasks_empty(self):
-        """Task yoksa → boş liste."""
+        """No tasks → empty list."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.get("/api/tasks/")
 
@@ -145,7 +145,7 @@ class TaskListTests(BaseAPITestCase):
         self.assertEqual(len(response.data), 0)
 
     def test_list_tasks_only_own(self):
-        """Kullanıcı sadece kendi task'larını görür."""
+        """User sees only their own tasks."""
         Task.objects.create(user=self.user1, title="Alice task 1", priority="low")
         Task.objects.create(user=self.user1, title="Alice task 2", priority="high")
         Task.objects.create(user=self.user2, title="Bob task 1", priority="medium")
@@ -163,7 +163,7 @@ class TaskListTests(BaseAPITestCase):
 class TaskCreateTests(BaseAPITestCase):
 
     def test_create_task_success(self):
-        """Geçerli task → 201."""
+        """Valid task → 201."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.post("/api/tasks/", {
             "title": "New task",
@@ -176,7 +176,7 @@ class TaskCreateTests(BaseAPITestCase):
         self.assertEqual(Task.objects.first().user, self.user1)
 
     def test_create_task_empty_title(self):
-        """Boş title → 400."""
+        """Empty title → 400."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.post("/api/tasks/", {
             "title": "",
@@ -186,7 +186,7 @@ class TaskCreateTests(BaseAPITestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_create_task_whitespace_title(self):
-        """Sadece boşluk title → 400."""
+        """Whitespace-only title → 400."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.post("/api/tasks/", {
             "title": "   ",
@@ -196,7 +196,7 @@ class TaskCreateTests(BaseAPITestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_create_task_invalid_priority(self):
-        """Geçersiz priority → 400."""
+        """Invalid priority → 400."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.post("/api/tasks/", {
             "title": "Test",
@@ -206,7 +206,7 @@ class TaskCreateTests(BaseAPITestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_create_task_long_title(self):
-        """200+ karakter title → 400."""
+        """Title over 200 chars → 400."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.post("/api/tasks/", {
             "title": "a" * 201,
@@ -230,7 +230,7 @@ class TaskDetailTests(BaseAPITestCase):
         )
 
     def test_get_task_success(self):
-        """Kendi task'ını görebilir."""
+        """User can view their own task."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.get(f"/api/tasks/{self.task1.id}/")
 
@@ -238,14 +238,14 @@ class TaskDetailTests(BaseAPITestCase):
         self.assertEqual(response.data["title"], "Alice task")
 
     def test_get_other_users_task(self):
-        """Başkasının task'ını göremez → 404."""
+        """User cannot view another user's task → 404."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token2.key}")
         response = self.client.get(f"/api/tasks/{self.task1.id}/")
 
         self.assertEqual(response.status_code, 404)
 
     def test_update_task_success(self):
-        """Kendi task'ını güncelleyebilir."""
+        """User can update their own task."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.patch(f"/api/tasks/{self.task1.id}/", {
             "title": "Updated title"
@@ -256,7 +256,7 @@ class TaskDetailTests(BaseAPITestCase):
         self.assertEqual(self.task1.title, "Updated title")
 
     def test_update_other_users_task(self):
-        """Başkasının task'ını güncelleyemez → 404."""
+        """User cannot update another user's task → 404."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token2.key}")
         response = self.client.patch(f"/api/tasks/{self.task1.id}/", {
             "title": "Hacked"
@@ -265,7 +265,7 @@ class TaskDetailTests(BaseAPITestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_delete_task_success(self):
-        """Kendi task'ını silebilir → 204."""
+        """User can delete their own task → 204."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token1.key}")
         response = self.client.delete(f"/api/tasks/{self.task1.id}/")
 
@@ -273,7 +273,7 @@ class TaskDetailTests(BaseAPITestCase):
         self.assertEqual(Task.objects.count(), 0)
 
     def test_delete_other_users_task(self):
-        """Başkasının task'ını silemez → 404."""
+        """User cannot delete another user's task → 404."""
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token2.key}")
         response = self.client.delete(f"/api/tasks/{self.task1.id}/")
 
